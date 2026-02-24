@@ -1,8 +1,11 @@
+import random
 from flask import Blueprint, render_template, redirect, url_for
 from flask import request
 from task import Task
 from flask_login import login_required, current_user
 from models import db, Task, User, Visit, Waitlist
+# import datetime
+import datetime
 
 # Create a blueprint
 main_blueprint = Blueprint('main', __name__)
@@ -51,9 +54,22 @@ def todo():
 # @login_required
 def dashboard():
     visits = Visit.query.all()
+
+    chart_week = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+    week_notes = [random.randint(0, 15) for _ in range(7)]
+    two_week_notes = [random.randint(0, 15) for _ in range(7)]
+
     return render_template('admin.html',
-                           productivity_change=0.6,
-                           visits=visits,
+                           date=datetime.datetime.now().strftime("%B %d, %Y"),
+                           total_users=716,     # add real number
+                           new_users=5,         # add real number
+                           visits_today=120,    # add real number
+                           productivity_change=0.6,   # add real number
+                           visits=visits,           # add real value
+                           chart_week=chart_week,   # update list to show today as the last day in the chart
+                           week_notes=week_notes,   # add real values
+                           two_week_notes=two_week_notes  # add real values
                            )
 
 
