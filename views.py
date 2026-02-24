@@ -10,7 +10,7 @@ main_blueprint = Blueprint('main', __name__)
 
 def log_visit(page, user_id):
     """Log a visit to a page by a user."""
-    visit = Visit(page=page, user_id=user_id)
+    visit = Visit(page=page, user=user_id)
     db.session.add(visit)
     db.session.commit()
 
@@ -22,6 +22,13 @@ def log_visit(page, user_id):
 
 @main_blueprint.route('/', methods=['GET'])
 def index():
+    log_visit(page='index', user_id=current_user.id if current_user.is_authenticated else None)
+
+    # print all visits
+    visits = Visit.query.all()
+    for visit in visits:
+        print(f"Visit: {visit.page}, User ID: {visit.user}, Timestamp: {visit.timestamp}")
+
     return render_template('index.html')
 
 @main_blueprint.route('/invitation', methods=['GET', 'POST'])
@@ -38,6 +45,17 @@ def invitation():
 @login_required
 def todo():
     return render_template('todo.html')
+
+
+@main_blueprint.route('/dashboard', methods=['GET', 'POST'])
+# @login_required
+def dashboard():
+    visits = Visit.query.all()
+    return render_template('admin.html',
+                           productivity_change=0.6,
+                           visits=visits,
+                           )
+
 
 
 @main_blueprint.route('/api/v1/tasks', methods=['GET'])
